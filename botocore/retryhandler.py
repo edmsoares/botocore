@@ -65,6 +65,7 @@ def create_exponential_delay_function(base, growth_factor):
     parameter to calculate the delay.
 
     """
+    print('## create_exponential_delay_function - base {} growth {}'.format(base, growth_factor))
     return functools.partial(
         delay_exponential, base=base, growth_factor=growth_factor)
 
@@ -83,6 +84,9 @@ def create_retry_action_from_config(config, operation_name=None):
     # default section, which means that delay functions apply
     # for every policy in the retry config (per service).
     delay_config = config['__default__']['delay']
+
+    print('# create_retry_action_from_config, delay_config.type: ', delay_config['type'], ' ', delay_config)
+
     if delay_config['type'] == 'exponential':
         return create_exponential_delay_function(
             base=delay_config['base'],
@@ -182,9 +186,11 @@ class RetryHandler(object):
         """
         if self._checker(attempts, response, caught_exception):
             result = self._action(attempts=attempts)
+            print("# Retry needed, action of: %s", result)
             logger.debug("Retry needed, action of: %s", result)
             return result
         logger.debug("No retry needed.")
+        print("# No retry needed.")
 
 
 class BaseChecker(object):
